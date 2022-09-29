@@ -39,18 +39,18 @@ NOTE: If the unit test is not on, that code will not be compiled!
 #define LAB1_DEFAULT_CONSTRUCTOR_NO_ARGS			1
 #define LAB1_DEFAULT_CONSTRUCTOR_WITH_ARGS			1
 #define LAB1_BRACKET_OPERATOR						1
-#define LAB1_SIZE_ACCESSOR							0
-#define LAB1_CAPACITY_ACCESSOR						0
+#define LAB1_SIZE_ACCESSOR							1
+#define LAB1_CAPACITY_ACCESSOR						1
 #define LAB1_RESERVE_EMPTY							0
 #define LAB1_RESERVE_DOUBLE_CAPACITY				0
 #define LAB1_RESERVE_LARGER_CAPACITY				0
 #define LAB1_RESERVE_SMALLER_CAPACITY				0
-#define LAB1_APPEND_NO_RESIZE						0
-#define LAB1_APPEND_RESIZE							0
-#define LAB1_CLEAR									0
-#define LAB1_DESTRUCTOR								0
-#define LAB1_ASSIGNMENT_OPERATOR					0
-#define LAB1_COPY_CONSTRUCTOR						0
+#define LAB1_APPEND_NO_RESIZE						1
+#define LAB1_APPEND_RESIZE							1
+#define LAB1_CLEAR									1
+#define LAB1_DESTRUCTOR								1
+#define LAB1_ASSIGNMENT_OPERATOR					1
+#define LAB1_COPY_CONSTRUCTOR						1
 
 // Our implementation of a vector (simplified)
 template<typename Type>
@@ -91,9 +91,11 @@ public:
 	// Copy constructor
 	//		Used to initialize one object to another
 	// In:	_copy				The object to copy from
-	DynArray(const DynArray& _copy) {
+	DynArray(const DynArray& _copy) : mArray(_copy.mCapacity ? new Type[_copy.mCapacity] : nullptr), mSize(_copy.mSize), mCapacity(_copy.mCapacity) {
 		// TODO: Implement this method
-
+		for (int i = 0; i < mCapacity; i++) {
+			mArray[i] = _copy.mArray[i];
+		}
 	}
 
 	// Assignment operator
@@ -104,7 +106,13 @@ public:
 	//		This allows us to daisy-chain
 	DynArray& operator=(const DynArray& _assign) {
 		// TODO: Implement this method
-	
+		if (this != &_assign) {
+			DynArray temp(_assign);
+			std::swap(mArray, temp.mArray);
+			std::swap(mCapacity, temp.mCapacity);
+			std::swap(mSize, temp.mSize);
+		}
+		return *this;
 	}
 
 	// Clear
@@ -112,7 +120,10 @@ public:
 	//		Sets all data members back to default values
 	void Clear() {
 		// TODO: Implement this method
-	
+		delete[] mArray;
+		mSize = 0;
+		mCapacity = 0;
+		mArray = mCapacity == 0 ? nullptr : new Type[mCapacity];
 	}
 
 	// Overloaded [] operator
@@ -122,7 +133,7 @@ public:
 	// Return: The item at the specified index (by reference)
 	Type& operator[](size_t _index) {
 		// TODO: Implement this method
-	
+		return mArray[_index];
 	}
 
 	// Get the current number of elements actively being used
@@ -130,7 +141,7 @@ public:
 	// Return: The current number of elements used
 	size_t Size() const {
 		// TODO: Implement this method
-	
+		return mSize;
 	}
 
 	// Get the current capacity of the internal array
@@ -138,7 +149,7 @@ public:
 	// Return: The capacity of the array
 	size_t Capacity() const {
 		// TODO: Implement this method
-	
+		return mCapacity;
 	}
 
 	// Add an item to the end of the array
@@ -147,7 +158,21 @@ public:
 	// In:	_data			The item to be added
 	void Append(const Type& _data) {
 		// TODO: Implement this method
-	
+		if (this.mSize == this.mCapacity) {
+			DynArray temp(this);
+			temp.mCapacity = (this.mCapacity * 2);
+			temp.mSize = (this.mSize + 1);
+			Type newArray = new Type[temp.mCapacity];
+			for (int i = 0; i < this->mCapacity; i++) {
+				newArray[i] = mArray[i];
+			}
+			newArray[temp.mSize] = _data;
+			this->mArray = newArray;
+		}
+		else { 
+			mArray[this->mSize + 1] = _data;
+			this->mSize++;
+		}
 	}
 
 	// Resizes the internal array, and copies all data over
