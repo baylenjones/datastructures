@@ -158,21 +158,20 @@ public:
 	// In:	_data			The item to be added
 	void Append(const Type& _data) {
 		// TODO: Implement this method
-		if (this.mSize == this.mCapacity) {
-			DynArray temp(this);
-			temp.mCapacity = (this.mCapacity * 2);
-			temp.mSize = (this.mSize + 1);
-			Type newArray = new Type[temp.mCapacity];
-			for (int i = 0; i < this->mCapacity; i++) {
-				newArray[i] = mArray[i];
+		if (mSize >= mCapacity) {
+			size_t updated = (mCapacity * 2);
+			Type* temp = new Type[updated];
+			for (int i = 0; i < this->mSize; i++) {
+				temp[i] = mArray[i];
 			}
-			newArray[temp.mSize] = _data;
-			this->mArray = newArray;
+			delete[] mArray;
+			mArray = temp;
+			mCapacity = updated;
 		}
-		else { 
-			mArray[this->mSize + 1] = _data;
-			this->mSize++;
-		}
+		
+		mArray[mSize++] = _data;
+		mSize = mSize;
+
 	}
 
 	// Resizes the internal array, and copies all data over
@@ -183,6 +182,18 @@ public:
 	//	SPECIAL CASE: If mCapacity is 0, then it should be set to 1
 	void Reserve(size_t _newCapacity = 0) {
 		// TODO: Implement this method
-	
+		if (_newCapacity == 0) swap(mCapacity *= 2);
+		if (_newCapacity == 1) swap(mCapacity = 1);
+		if (_newCapacity >= mCapacity) swap(mCapacity = _newCapacity);
+
+	}
+
+	void swap(size_t newCap) {
+		Type* temp = new Type[newCap];
+		for (int i = 0; i < mSize; i++) {
+			temp[i] = mArray[i];
+		}
+		delete[] mArray;
+		mArray = temp;
 	}
 };
