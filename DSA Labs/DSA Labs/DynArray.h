@@ -41,10 +41,10 @@ NOTE: If the unit test is not on, that code will not be compiled!
 #define LAB1_BRACKET_OPERATOR						1
 #define LAB1_SIZE_ACCESSOR							1
 #define LAB1_CAPACITY_ACCESSOR						1
-#define LAB1_RESERVE_EMPTY							0
-#define LAB1_RESERVE_DOUBLE_CAPACITY				0
-#define LAB1_RESERVE_LARGER_CAPACITY				0
-#define LAB1_RESERVE_SMALLER_CAPACITY				0
+#define LAB1_RESERVE_EMPTY							1
+#define LAB1_RESERVE_DOUBLE_CAPACITY				1
+#define LAB1_RESERVE_LARGER_CAPACITY				1
+#define LAB1_RESERVE_SMALLER_CAPACITY				1
 #define LAB1_APPEND_NO_RESIZE						1
 #define LAB1_APPEND_RESIZE							1
 #define LAB1_CLEAR									1
@@ -183,7 +183,7 @@ public:
 	void Reserve(size_t _newCapacity = 0) {
 		// TODO: Implement this method
 		if (_newCapacity == 0) swap(mCapacity *= 2);
-		if (_newCapacity == 1) swap(mCapacity = 1);
+		if (mCapacity == 0) swap(mCapacity = 1);
 		if (_newCapacity >= mCapacity) swap(mCapacity = _newCapacity);
 
 	}
