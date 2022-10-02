@@ -49,6 +49,7 @@ NOTE: If the unit test is not on, that code will not be compiled!
 /* Includes */
 /************/
 #include <list>
+using namespace std;
 
 class DSA_Lab4 {
 
@@ -65,7 +66,10 @@ public:
 	//		_size			The number of elements in the array
 	void QueueOrderingAdd(const float* _arr, size_t _size) {
 		// TODO: Implement this method
-
+		mList.clear();
+		for (int i = 0; i < _size; i++) {
+			mList.push_back(_arr[i]);
+		}
 	}
 
 	// Add all of the values from the array into the list using stack ordering
@@ -74,7 +78,7 @@ public:
 	//		_size			The number of elements in the array
 	void StackOrderingAdd(const float* _arr, size_t _size) {
 		// TODO: Implement this method
-
+		
 	}
 
 	// Remove a single value from the list using queue ordering
@@ -82,7 +86,7 @@ public:
 	// Return: The value that was removed
 	float QueueOrderingRemove() {
 		// TODO: Implement this method
-	
+		//return mList[0];
 	}
 
 	// Remove a single value from the list using stack ordering
