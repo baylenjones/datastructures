@@ -38,30 +38,30 @@ NOTE: If the unit test is not on, that code will not be compiled!
 
 // Individual unit test toggles
 #define LAB3_CTOR						1
-#define LAB3_NODE_CTOR_DEFAULT			0
-#define LAB3_NODE_CTOR					0
+#define LAB3_NODE_CTOR_DEFAULT			1
+#define LAB3_NODE_CTOR					1
 #define LAB3_ADDHEAD_EMPTY				1
 #define LAB3_ADDHEAD					1
 #define LAB3_ADDTAIL_EMPTY				1
 #define LAB3_ADDTAIL					1
 #define LAB3_CLEAR						1
 #define LAB3_DTOR						1
-#define LAB3_ITER_BEGIN					0
-#define LAB3_ITER_END					0
+#define LAB3_ITER_BEGIN					1
+#define LAB3_ITER_END					1
 #define LAB3_ITER_INCREMENT_PRE			1
 #define LAB3_ITER_INCREMENT_POST		1
 #define LAB3_ITER_DECREMENT_PRE			1
 #define LAB3_ITER_DECREMENT_POST		1
 #define LAB3_ITER_DEREFERENCE			1
-#define LAB3_INSERT_EMPTY				0
-#define LAB3_INSERT_HEAD				0
-#define LAB3_INSERT_MIDDLE				0
+#define LAB3_INSERT_EMPTY				1
+#define LAB3_INSERT_HEAD				1
+#define LAB3_INSERT_MIDDLE				1
 #define LAB3_ERASE_EMPTY				0
 #define LAB3_ERASE_HEAD					0
 #define LAB3_ERASE_TAIL					0
 #define LAB3_ERASE_MIDDLE				0
-#define LAB3_ASSIGNMENT_OP				0
-#define LAB3_COPY_CTOR					0
+#define LAB3_ASSIGNMENT_OP				1
+#define LAB3_COPY_CTOR					1
 
 template<typename Type>
 class DList {
@@ -229,8 +229,7 @@ public:
 	//		Creates a new empty linked list
 	DList() {
 		// TODO: Implement this method
-		mHead = nullptr;
-		mTail = nullptr;
+		mHead = mTail =nullptr;
 		mSize = 0;
 	}
 
@@ -244,8 +243,7 @@ public:
 	// Copy constructor
 	//		Used to initialize one object to another
 	// In:	_copy			The object to copy from
-	DList(const DList& _copy) {
-		// TODO: Implement this method
+	DList(const DList& _copy) : mHead(mHead ? mHead : NULL), mTail(mTail ? mTail : NULL), mSize(0) {
 		*this = _copy;
 	}
 
@@ -257,9 +255,21 @@ public:
 	//		This allows us to daisy-chain
 	DList& operator=(const DList& _assign) {
 		// TODO: Implement this method
+		if (this != &_assign)
+		{
+			mHead = nullptr;
+			mTail = nullptr;
 
+			mSize = _assign.mSize;
 
-		return *this;
+			Node* temp;
+			temp = mHead;
+			while (temp != nullptr)
+			{
+				AddTail(temp->data);
+			}
+		}
+		return *this;;
 	}
 
 private:
@@ -296,12 +306,11 @@ public:
 		// TODO: Implement this method
 		Node* newNode = new Node(_data);
 		newNode->prev = mTail;
-
 		if (mHead == nullptr) {
-			mTail = mHead = newNode;
+			mHead = mTail = newNode;
 		}
 		else {
-			mHead->prev = newNode;
+			mTail->next = newNode;
 			mTail = newNode;
 		}
 		mSize++;
@@ -355,6 +364,35 @@ public:
 	// NOTE:	The iterator should now be pointing to the new node created
 	Iterator Insert(Iterator& _iter, const Type& _data) {
 		// Implement this method
+		Node* newNode = new Node(_data);
+		if (mHead == nullptr) {
+			mHead = mTail = newNode;
+			_iter.mCurr = mHead;
+		}
+		else {
+			if (_iter.mCurr->prev == nullptr) {
+				mHead->prev = newNode;
+				newNode->next = mHead;
+				mHead = newNode;
+				_iter.mCurr = mHead;
+			}
+			else {
+				Iterator it;
+				it.mCurr = mHead;
+				while (it.mCurr->next != _iter.mCurr) {
+
+					it.mCurr = it.mCurr->next;
+				}
+				newNode->prev = it.mCurr;
+				newNode->next = _iter.mCurr;
+				it.mCurr->next = newNode;
+				_iter.mCurr->prev = newNode;
+				_iter.mCurr = newNode;
+			}
+
+		}
+		mSize++;
+		return _iter;
 
 	}
 
@@ -380,6 +418,16 @@ public:
 	// NOTE:	The iterator should now be pointing at the node after the one erased
 	Iterator Erase(Iterator& _iter) {
 		// TODO: Implement this method
+		for (Iterator i = ++Begin(); i != End(); ++i) {
+			if (i.mCurr == _iter.mCurr) {
+				Node* tempNode = i.mCurr;
+				tempNode->prev->next = tempNode->next;
+				tempNode->next->prev = tempNode->prev;
+				delete tempNode;
+				tempNode = nullptr;
+				return ++i;
+			}
+		}
 	}
 
 	// Set an Iterator at the front of the list
@@ -387,7 +435,9 @@ public:
 	// Return: An iterator that has its curr pointing to the list's head
 	Iterator Begin() const {
 		// TODO: Implement this method
-	
+		Iterator iter;
+		iter.mCurr = mHead;
+		return iter;
 	}
 
 	// Set an Iterator pointing to the end of the list
@@ -395,6 +445,9 @@ public:
 	// Return: An iterator that has its curr pointing to a null pointer
 	Iterator End() const {
 		// TODO: Implement this method
-
+		Iterator iter;
+		iter.mCurr = mTail;
+		iter.mCurr = nullptr;
+		return iter;
 	}
 };
